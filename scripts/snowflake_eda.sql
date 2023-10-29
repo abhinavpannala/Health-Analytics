@@ -1,49 +1,25 @@
-SELECT * FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA LIMIT 100;
+SELECT * FROM HEALTH_DATA LIMIT 100;
 
-
--------=======================================================================================================================================================
----// Hypothesis for EDA:
---1. Univariate Analysis
---2. Does patients length of stay (LOS) changes wrt HOSPITAL_TYPE_CODE?
---3. Does patients length of stay (LOS) changes wrt CITY_CODE_HOSPITAL?
---4. Does patients length of stay (LOS) changes wrt HOSPITAL_REGION_CODE?
---5. DEPARTMENT of admission and its impact on LOS
---6. DEPARTMENT X HOSPITAL_REGION_CODE and its impact on LOS
---7. Does more AVAILABLE_EXTRA_ROOMS_IN_HOSPITAL impact a patients LOS
---8. TYPE_OF_ADMISSION and its impact on LOS
---9. SEVERITY_OF_ILLNESS and its impact on LOS
---10. AGE and its impact on LOS
---11. ADMISSION_DEPOSIT and its relation to LOS
---12. Does more visitors come with patients who have more severe illness?
---13. Is there any differences in the LOS for different WARD_TYPE & WARD_FACILITY_CODE in each DEPARTMENT
---14. Does BED_GRADE affects LOS of patients?
---15. Does more visitors come when younger patients got admitted than the older patients?
---16. What type of illness & admission does majority of patients who are less than 30 years of age have and which department most of them are getting admitted to?
---17. Are patients below 40 years pay more ADMISSION_DEPOSIT when they get admitted to the hospital?
-
-
--------=======================================================================================================================================================
-
+----========================================================================
 -- // 1. Univariate Analysis //
 
 -- Unique number of hospital codes and their distribution
 SELECT HOSPITAL_CODE, COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
 
 -- Unique number of hospital type code and their distribution
 SELECT HOSPITAL_TYPE_CODE, COUNT(DISTINCT HOSPITAL_CODE) AS CNT_HOSPITAL_CODE,COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
-
 
 -- Unique number of city code hospital and their distribution
 SELECT CITY_CODE_HOSPITAL, COUNT(DISTINCT HOSPITAL_CODE) AS CNT_HOSPITAL_CODE,
         COUNT(DISTINCT HOSPITAL_TYPE_CODE) AS CNT_HOSPITAL_TYPE_CODE,
         COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
 
@@ -51,34 +27,31 @@ ORDER BY 2 DESC;
 SELECT HOSPITAL_REGION_CODE, COUNT(DISTINCT HOSPITAL_CODE) AS CNT_HOSPITAL_CODE,
         COUNT(DISTINCT HOSPITAL_TYPE_CODE) AS CNT_HOSPITAL_TYPE_CODE,
         COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
-
 
 -- Unique number of department and their distribution
 SELECT DEPARTMENT, COUNT(DISTINCT HOSPITAL_CODE) AS CNT_HOSPITAL_CODE,
         COUNT(DISTINCT HOSPITAL_TYPE_CODE) AS CNT_HOSPITAL_TYPE_CODE,
         COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
-
 
 -- Unique number of Bed grade and their distribution
 SELECT BED_GRADE, COUNT(DISTINCT HOSPITAL_CODE) AS CNT_HOSPITAL_CODE,
         COUNT(DISTINCT HOSPITAL_TYPE_CODE) AS CNT_HOSPITAL_TYPE_CODE,
         COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
-
 
 -- Unique number of admission type and their distribution
 SELECT TYPE_OF_ADMISSION, COUNT(DISTINCT HOSPITAL_CODE) AS CNT_HOSPITAL_CODE,
         COUNT(DISTINCT HOSPITAL_TYPE_CODE) AS CNT_HOSPITAL_TYPE_CODE,
         COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
 
@@ -86,7 +59,7 @@ ORDER BY 2 DESC;
 SELECT SEVERITY_OF_ILLNESS, COUNT(DISTINCT HOSPITAL_CODE) AS CNT_HOSPITAL_CODE,
         COUNT(DISTINCT HOSPITAL_TYPE_CODE) AS CNT_HOSPITAL_TYPE_CODE,
         COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
 
@@ -94,40 +67,39 @@ ORDER BY 2 DESC;
 SELECT AGE, COUNT(DISTINCT HOSPITAL_CODE) AS CNT_HOSPITAL_CODE,
         COUNT(DISTINCT HOSPITAL_TYPE_CODE) AS CNT_HOSPITAL_TYPE_CODE,
         COUNT(*) AS CNT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+FROM HEALTH_DATA
 GROUP BY 1
 ORDER BY 2 DESC;
-
-
 ----========================================================================
 
--- // 2/3/4. Does patients length of stay (LOS) changes wrt HOSPITAL_TYPE_CODE/CITY_CODE_HOSPITAL/HOSPITAL_REGION_CODE? //
+-- // 2/3/4. Does patient length of stay (LOS) change wrt HOSPITAL_TYPE_CODE/CITY_CODE_HOSPITAL/HOSPITAL_REGION_CODE? //
 
 SELECT HOSPITAL_TYPE_CODE, 
         MIN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MIN_LOS,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
+-- Feedback: Hospital type code 'g' has significantly highest LOS 
 
 SELECT CITY_CODE_HOSPITAL, 
         MIN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MIN_LOS,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
+-- Feedback: No significant observations
 
 SELECT HOSPITAL_REGION_CODE, 
         MIN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MIN_LOS,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
-
-
+-- Feedback: No significant observations
 ----========================================================================
 
 -- // 5. DEPARTMENT of admission and its impact on LOS //
@@ -137,22 +109,20 @@ SELECT DEPARTMENT,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
-
-
+-- Feedback: Surgeries have higher LOS, Anesthesia cases have lower LOS.
 ----========================================================================
 
 -- // 6. DEPARTMENT X HOSPITAL_REGION_CODE and its impact on LOS //
-
-SELECT DEPARTMENT,HOSPITAL_REGION_CODE, 
+SELECT DEPARTMENT, HOSPITAL_REGION_CODE, 
         MIN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MIN_LOS,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1,2;
-
+-- Feedback: surgery's higher LOS are not affected by Hospital Region Code
 ----========================================================================
 
 -- // 7. Does more AVAILABLE_EXTRA_ROOMS_IN_HOSPITAL impact a patients LOS // (Insight)
@@ -163,9 +133,9 @@ SELECT AVAILABLE_EXTRA_ROOMS_IN_HOSPITAL,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
-
+-- Feedback: Admissions when lesser extra rooms in hospital resulted in higher LOS
 ----========================================================================
 
 -- // 8. TYPE_OF_ADMISSION and its impact on LOS // (Insight)
@@ -176,9 +146,9 @@ SELECT TYPE_OF_ADMISSION,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
-
+-- Feedback: Trauma has higher LOS
 ----========================================================================
 
 -- // 9. SEVERITY_OF_ILLNESS and its impact on LOS // (Insight)
@@ -189,9 +159,9 @@ SELECT SEVERITY_OF_ILLNESS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
-
+-- Feedback: Extreme illness resulted in higher LOS
 ----========================================================================
 
 -- // 10. AGE and its impact on LOS // (Insight)
@@ -202,17 +172,16 @@ SELECT AGE,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
-
+-- Feedback: LOS increases as age increases
 ----========================================================================
 
 -- // 11. ADMISSION_DEPOSIT and its relation to LOS //
 
-SELECT DISTINCT ADMISSION_DEPOSIT FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA; --- Ranges from 1800 to 11000
+SELECT DISTINCT ADMISSION_DEPOSIT FROM HEALTH_DATA; --- Ranges from 1800 to 11000
 
 WITH BASE AS (
-
     SELECT ADMISSION_DEPOSIT,
             CASE WHEN ADMISSION_DEPOSIT <= 3000 THEN '1. Less than 3K'
                  WHEN ADMISSION_DEPOSIT > 7000 THEN '3. Greater than 7K'   
@@ -220,7 +189,7 @@ WITH BASE AS (
             ADMISSION_DATE,
             DISCHARGE_DATE,
             CASE_ID
-    FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+    FROM HEALTH_DATA
 )
 
 -- SELECT * FROM BASE;
@@ -234,11 +203,10 @@ SELECT DEPOSIT_BUCKET,
 FROM BASE
 GROUP BY 1
 ORDER BY 1;
-
+-- Feedback: No significant insight but LOS is increasing as the deposit increases
 ----========================================================================
 
 -- // 12. Does more visitors come with patients who have more severe illness? //
-
 
 SELECT SEVERITY_OF_ILLNESS,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES,
@@ -246,15 +214,12 @@ SELECT SEVERITY_OF_ILLNESS,
         MAX(VISITORS_WITH_PATIENT) AS MAX_VISITORS,
         AVG(VISITORS_WITH_PATIENT) AS AVG_VISITORS,
         MEDIAN(VISITORS_WITH_PATIENT) AS MEDIAN_VISITORS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
-
-
+-- Feedback: No significant insight, but people with extreme illness have slightly more number of visitors
 
 ----========================================================================
-
 -- // 13. Is there any differences in the LOS for different WARD_TYPE & WARD_FACILITY_CODE in each DEPARTMENT // (Insight)
-
 
 SELECT DEPARTMENT,WARD_TYPE,WARD_FACILITY_CODE,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES,
@@ -262,20 +227,21 @@ SELECT DEPARTMENT,WARD_TYPE,WARD_FACILITY_CODE,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1,2,3
 ORDER BY 1,2,3;
+-- Feedback: LOS significantly changes as the combination of department, ward_type and facility_code varies
 
-SELECT DEPARTMENT,SEVERITY_OF_ILLNESS,
+SELECT DEPARTMENT, SEVERITY_OF_ILLNESS,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES,
         MIN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MIN_LOS,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1,2
 ORDER BY 1,2;
-
+-- Feedback: Surgery with Extreme illness have higher LOS and Anesthesia with Minon illness has lower LOS
 ----========================================================================
 
 -- // 14. Does BED_GRADE affects LOS of patients? // (Insight)
@@ -286,8 +252,9 @@ SELECT BED_GRADE,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1;
+-- Feedback: No significant insights
 
 SELECT SEVERITY_OF_ILLNESS,BED_GRADE,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES,
@@ -295,77 +262,23 @@ SELECT SEVERITY_OF_ILLNESS,BED_GRADE,
         MAX(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MAX_LOS,
         AVG(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS AVG_LOS,
         MEDIAN(DATEDIFF(day,ADMISSION_DATE,DISCHARGE_DATE)) AS MEDIAN_LOS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1,2
 ORDER BY 1,2;
-
+-- Feedback: No significant insights
 ----========================================================================
 
--- // 15. Does more visitors come when younger patients got admitted than the older patients? // (Insight)
-
+-- // 15. Do more visitors come when younger patients got admitted than older patients? // (Insight)
 SELECT AGE,
         COUNT(DISTINCT CASE_ID) AS CNT_CASES,
         MIN(VISITORS_WITH_PATIENT) AS MIN_VISITORS,
         MAX(VISITORS_WITH_PATIENT) AS MAX_VISITORS,
         AVG(VISITORS_WITH_PATIENT) AS AVG_VISITORS,
         MEDIAN(VISITORS_WITH_PATIENT) AS MEDIAN_VISITORS
-FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA 
+FROM HEALTH_DATA 
 GROUP BY 1
 ORDER BY 1;
-
+-- Feedback: No significant insights (Childhood or Old age cases have a higher number of visitors)
 ----========================================================================
 
--- // 16. What type of illness & admission does majority of patients who are less than 30 years of age have and which department most of them are getting admitted to? //
-
-WITH BASE AS (
-
-    SELECT * 
-    FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
-    WHERE AGE IN ('0-10','20-Nov','21-30')
-
-),
-
-ILLNESS_N_ADMISSION AS (
-
-    SELECT TYPE_OF_ADMISSION, SEVERITY_OF_ILLNESS,
-            COUNT(DISTINCT CASE_ID) AS CNT_CASES
-    FROM BASE 
-    GROUP BY 1,2
-    ORDER BY 1,2
-),
-
-DEPARTMENT AS (
-
-    SELECT DEPARTMENT, COUNT(DISTINCT CASE_ID) AS CNT_CASES
-    FROM BASE 
-    GROUP BY 1
-
-)
-
--- SELECT * FROM BASE; -- 43,417 cases
-
--- SELECT * FROM ILLNESS_N_ADMISSION;
-
-SELECT * FROM DEPARTMENT;
-
-----========================================================================
-
--- // 17. Are patients below 40 years pay more ADMISSION_DEPOSIT when they get admitted to the hospital? // (Insight)
-
-WITH BASE AS (
-
-    SELECT *,
-            CASE WHEN AGE IN ('0-10','20-Nov','21-30','31-40') THEN 1 ELSE 0 END AS BELOW_40_IND            
-    FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
-)
-
-SELECT BELOW_40_IND,
-        MIN(ADMISSION_DEPOSIT) AS MIN_DEP,
-        MAX(ADMISSION_DEPOSIT) AS MAX_DEP,
-        AVG(ADMISSION_DEPOSIT) AS AVG_DEP
-FROM BASE 
-GROUP BY 1;
-
-----========================================================================
-----========================================================================
 

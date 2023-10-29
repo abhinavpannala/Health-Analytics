@@ -1,4 +1,4 @@
-SELECT * FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA LIMIT 100;
+SELECT * FROM HEALTH_DATA LIMIT 100;
 
 
 --- /// Feature Engineering Steps (Preprocessing will be done in Python Notebook)
@@ -34,7 +34,7 @@ WITH BASE AS (
            ADMISSION_DATE,
            DISCHARGE_DATE
 
-    FROM HEALTHDB.HEALTHSCHEMA.HEALTH_DATA
+    FROM HEALTH_DATA
 
 ),
     
