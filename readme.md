@@ -42,5 +42,9 @@ To find the features with the highest impact on LOS, perform Dtree and XGB selec
 * Train the new features on Linear Regression, XGB Regression, Random Forest Regression.
 Hyperparameter tuning, voting, bagging, etc, are not performed as the focus is on demonstrating the workflow.
 
-#### 7. Deploy the script:
-#### 8. Schedule/Retrain?
+####7. Deploy and schedule the script:
+Now that we have the model ready, schedule a notebook to run the script on the preprocessed daily updated data from the Snowflake warehouse.
+Here is the script: [scoring_and_scheduling](notebooks/scoring_and_scheduling_script.ipynb). The script also sends email notification daily, whenever the LOS is predicted by the model. The predicted data is stored in a logging database on Snowflake for model retraining purposes.
+
+####Conclusion:
+The project gives an overall idea of performing feature engineering with SQL and feature selection using Pandas while creating an end-to-end data workflow, where the data is managed by Snowflake and compute resources by Sagemaker Notebook Instance.
